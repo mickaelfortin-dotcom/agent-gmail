@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: agent-gmail
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn server:app
+    envVars:
+      - key: GROQ_API_KEY
+        sync: false
+      - key: SECRET_KEY
+        sync: false
+      - key: APP_PASSWORD_HASH
+        sync: false
