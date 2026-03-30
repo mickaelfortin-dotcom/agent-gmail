@@ -21,10 +21,10 @@ load_dotenv()
 
 app = Flask(__name__, static_folder=".")
 app.secret_key = os.getenv("SECRET_KEY", "change-this-secret-key-in-env")
-app.config['SESSION_COOKIE_SECURE'] = True
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 app.config['PERMANENT_SESSION_LIFETIME'] = 30 * 24 * 60 * 60  # 30 jours
+app.config['SESSION_COOKIE_SECURE'] = os.getenv('RENDER', False)  # HTTPS seulement sur Render
 CORS(app)
 
 GROQ_API_KEY     = os.getenv("GROQ_API_KEY")
@@ -46,7 +46,10 @@ SCOPES = [
 
 def check_auth():
     """Vérifie si l'utilisateur est connecté."""
-    return session.get("authenticated") == True
+    if session.get("authenticated") == True:
+        session.permanent = True  # Refresh session a chaque requete
+        return True
+    return False
 
 
 def hash_password(pwd):
